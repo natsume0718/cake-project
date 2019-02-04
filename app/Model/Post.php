@@ -1,6 +1,4 @@
- <?php
-
+<?php
 class Post extends AppModel
 {
 }
-
