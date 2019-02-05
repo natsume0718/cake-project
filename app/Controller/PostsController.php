@@ -67,6 +67,35 @@ class PostsController extends AppController
 		return $this->redirect(array('action'=>'index'));
 	}
 
+	public function edit($id = null)
+	{
+		//投稿確認
+		$post = $this->Post->findById($id);
+		if(!$post)
+		{
+			throw new NotFoundException();
+		}
+
+		//フォームからのリクエストチェック
+		if($this->request->is(array('post', 'put')))
+		{
+			//idで投稿取得
+			$this->Post->id = $id;
+			$update_res = $this->Post->save($this->request->data);
+			if($update_res)
+			{
+				$this->Flash->success(__('投稿の交信に成功しました'));
+				return $this->redirect(array('action'=>'index'));
+			}
+		}
+
+		//フォーム内に投稿情報セット
+		if(empty($this->request->data))
+		{
+			$this->request->data = $post;
+		}
+	}
+
 }
 
 ?>
