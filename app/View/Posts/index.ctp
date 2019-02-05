@@ -15,6 +15,11 @@
 			);
 			?>
 		</td>
+		<td>
+			<?php
+			echo $this->Html->link('編集', array('action'=>'edit', $post['Post']['id']));
+			?>
+		</td>
 	</tr>
 	<?php endforeach; ?>
 </table>
