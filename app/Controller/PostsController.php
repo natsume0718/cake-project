@@ -8,6 +8,7 @@ class PostsController extends AppController
 
 	public function index()
 	{
+		$this->set('title_for_layout', '投稿一覧');
 		//投稿を全件取得して変数にセット
 		$this->set('posts', $this->Post->find('all'));
 	}
@@ -24,11 +25,13 @@ class PostsController extends AppController
 		{
 			throw new NotFoundException(__('投稿が見つかりません'));
 		}
+		$this->set('title_for_layout', $post['Post']['title']);
 		$this->set('post', $post);
 	}
 
 	public function add()
 	{
+		$this->set('title_for_layout', '新規投稿');
 		//post送信があった場合
 		if($this->request->is('post'))
 		{
@@ -75,6 +78,8 @@ class PostsController extends AppController
 		{
 			throw new NotFoundException();
 		}
+
+		$this->set('title_for_layout', '編集：' . $post['Post']['title']);
 
 		//フォームからのリクエストチェック
 		if($this->request->is(array('post', 'put')))
