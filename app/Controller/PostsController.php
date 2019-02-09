@@ -21,7 +21,7 @@ class PostsController extends AppController
 		}
 
 		$post = $this->Post->findById($id);
-		if(!$id)
+		if(!$post)
 		{
 			throw new NotFoundException(__('投稿が見つかりません'));
 		}
@@ -55,16 +55,18 @@ class PostsController extends AppController
 		{
 			throw new MethodNotAllowedException();
 		}
-
-		//投稿削除
-		$delete_res = $this->Post->delete($id);
-		if($delete_res)
+		if($id)
 		{
-			$this->Flash->success(__('投稿を削除しました'));
-		}
-		else
-		{
-			$this->Flash->error(__('投稿の削除失敗'));
+			//投稿削除
+			$delete_res = $this->Post->delete($id);
+			if($delete_res)
+			{
+				$this->Flash->success(__('投稿を削除しました'));
+			}
+			else
+			{
+				$this->Flash->error(__('投稿の削除失敗'));
+			}
 		}
 
 		return $this->redirect(array('action'=>'index'));
@@ -72,32 +74,35 @@ class PostsController extends AppController
 
 	public function edit($id = null)
 	{
-		//投稿確認
-		$post = $this->Post->findById($id);
-		if(!$post)
+		if($id)
 		{
-			throw new NotFoundException();
-		}
-
-		$this->set('title_for_layout', '編集：' . $post['Post']['title']);
-
-		//フォームからのリクエストチェック
-		if($this->request->is(array('post', 'put')))
-		{
-			//idで投稿取得
-			$this->Post->id = $id;
-			$update_res = $this->Post->save($this->request->data);
-			if($update_res)
+			//投稿確認
+			$post = $this->Post->findById($id);
+			if(!$post)
 			{
-				$this->Flash->success(__('投稿の交信に成功しました'));
-				return $this->redirect(array('action'=>'index'));
+				throw new NotFoundException();
 			}
-		}
 
-		//フォーム内に投稿情報セット
-		if(empty($this->request->data))
-		{
-			$this->request->data = $post;
+			$this->set('title_for_layout', '編集：' . $post['Post']['title']);
+
+			//フォームからのリクエストチェック
+			if($this->request->is(array('post', 'put')))
+			{
+				//idで投稿取得
+				$this->Post->id = $id;
+				$update_res = $this->Post->save($this->request->data);
+				if($update_res)
+				{
+					$this->Flash->success(__('投稿の交信に成功しました'));
+					return $this->redirect(array('action'=>'index'));
+				}
+			}
+
+			//フォーム内に投稿情報セット
+			if(empty($this->request->data))
+			{
+				$this->request->data = $post;
+			}
 		}
 	}
 
