@@ -1,11 +1,10 @@
 <?php
-
 App::uses('AppModel', 'Model');
 App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
 
 class User extends AppModel
 {
-	public $vaidate = array(
+	public $validate = array(
 		'username'=>array(
 			'require'=>array(
 				'rule'=>'notBlank',
@@ -32,11 +31,11 @@ class User extends AppModel
 			),
 			'email'=>array(
 				'rule'=>array('email',true),
-				'mesasge'=>'有効なメールアドレスの形式で入力してください'
+				'message'=>'有効なメールアドレスの形式で入力してください'
 			),
 			'uni'=>array(
 				'rule'=>'isUnique',
-				'message'=>'同一メールアドレスが存在しています'
+				'message'=>'既に同一メールアドレスが登録されています'
 			)
 		)
 	);
@@ -49,5 +48,6 @@ class User extends AppModel
 			$this->data[$this->alias]['password'] = $passwordHasher->hash($this->data[$this->alias]['password']);
 		}
 		return true;
+	}
 }
 
