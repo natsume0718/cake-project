@@ -12,7 +12,7 @@ class PostsController extends AppController
 		//投稿を全件取得して変数にセット
 		$this->set('posts', $this->Post->find('all'));
 		//ログイン情報取得して渡す
-		$user = $this->Auth->user();
+		$user['id'] = $this->Auth->user('id');
 		$this->set('user', $user);
 	}
 
@@ -40,6 +40,8 @@ class PostsController extends AppController
 		{
 			//モデルの状態リセット
 			$this->Post->create();
+			//投稿者IDを追加
+			$this->request->data['Post']['user_id'] = $this->Auth->user('id');
 			//データ挿入
 			$save_res = $this->Post->save($this->request->data);
 			if($save_res)
@@ -81,9 +83,15 @@ class PostsController extends AppController
 		{
 			//投稿確認
 			$post = $this->Post->findById($id);
+			//投稿がない場合、投稿者ではない場合エラー
 			if(!$post)
 			{
 				throw new NotFoundException();
+			}
+			else if($post['Post']['user_id'] !== $this->Auth->user('id'))
+			{
+				$this->Flash->error(__('不正なアクセスです'));
+				return $this->redirect(array('action'=>'index'));
 			}
 
 			$this->set('title_for_layout', '編集：' . $post['Post']['title']);
@@ -91,7 +99,7 @@ class PostsController extends AppController
 			//フォームからのリクエストチェック
 			if($this->request->is(array('post', 'put')))
 			{
-				//idで投稿取得
+				//編集なのでIDは変えない
 				$this->Post->id = $id;
 				$update_res = $this->Post->save($this->request->data);
 				if($update_res)
