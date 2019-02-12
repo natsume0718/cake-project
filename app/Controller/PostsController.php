@@ -11,6 +11,9 @@ class PostsController extends AppController
 		$this->set('title_for_layout', '投稿一覧');
 		//投稿を全件取得して変数にセット
 		$this->set('posts', $this->Post->find('all'));
+		//ログイン情報取得して渡す
+		$user = $this->Auth->user();
+		$this->set('user', $user);
 	}
 
 	public function view($id = null)
