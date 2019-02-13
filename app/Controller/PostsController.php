@@ -11,22 +11,8 @@ class PostsController extends AppController
 		$this->set('title_for_layout', '投稿一覧');
 		//投稿を全件取得して変数にセット
 		$this->set('posts', $this->Post->find('all'));
-	}
-
-	public function view($id = null)
-	{
-		if(!$id)
-		{
-			throw new NotFoundException(__('投稿が見つかりません'));
-		}
-
-		$post = $this->Post->findById($id);
-		if(!$id)
-		{
-			throw new NotFoundException(__('投稿が見つかりません'));
-		}
-		$this->set('title_for_layout', $post['Post']['title']);
-		$this->set('post', $post);
+		//ログイン情報取得して渡す
+		$this->set('user', $this->Auth->user());
 	}
 
 	public function add()
@@ -37,6 +23,8 @@ class PostsController extends AppController
 		{
 			//モデルの状態リセット
 			$this->Post->create();
+			//投稿者IDを追加
+			$this->request->data['Post']['user_id'] = $this->Auth->user('id');
 			//データ挿入
 			$save_res = $this->Post->save($this->request->data);
 			if($save_res)
@@ -55,16 +43,18 @@ class PostsController extends AppController
 		{
 			throw new MethodNotAllowedException();
 		}
-
-		//投稿削除
-		$delete_res = $this->Post->delete($id);
-		if($delete_res)
+		if($id)
 		{
-			$this->Flash->success(__('投稿を削除しました'));
-		}
-		else
-		{
-			$this->Flash->error(__('投稿の削除失敗'));
+			//投稿削除
+			$delete_res = $this->Post->delete($id);
+			if($delete_res)
+			{
+				$this->Flash->success(__('投稿を削除しました'));
+			}
+			else
+			{
+				$this->Flash->error(__('投稿の削除失敗'));
+			}
 		}
 
 		return $this->redirect(array('action'=>'index'));
@@ -72,32 +62,41 @@ class PostsController extends AppController
 
 	public function edit($id = null)
 	{
-		//投稿確認
-		$post = $this->Post->findById($id);
-		if(!$post)
+		if($id)
 		{
-			throw new NotFoundException();
-		}
-
-		$this->set('title_for_layout', '編集：' . $post['Post']['title']);
-
-		//フォームからのリクエストチェック
-		if($this->request->is(array('post', 'put')))
-		{
-			//idで投稿取得
-			$this->Post->id = $id;
-			$update_res = $this->Post->save($this->request->data);
-			if($update_res)
+			//投稿確認
+			$post = $this->Post->findById($id);
+			//投稿がない場合、投稿者ではない場合エラー
+			if(!$post)
 			{
-				$this->Flash->success(__('投稿の交信に成功しました'));
+				throw new NotFoundException();
+			}
+			else if($post['Post']['user_id'] !== $this->Auth->user('id'))
+			{
+				$this->Flash->error(__('不正なアクセスです'));
 				return $this->redirect(array('action'=>'index'));
 			}
-		}
 
-		//フォーム内に投稿情報セット
-		if(empty($this->request->data))
-		{
-			$this->request->data = $post;
+			$this->set('title_for_layout', '編集：' . $post['Post']['title']);
+
+			//フォームからのリクエストチェック
+			if($this->request->is(array('post', 'put')))
+			{
+				//編集なのでIDは変えない
+				$this->Post->id = $id;
+				$update_res = $this->Post->save($this->request->data);
+				if($update_res)
+				{
+					$this->Flash->success(__('投稿の交信に成功しました'));
+					return $this->redirect(array('action'=>'index'));
+				}
+			}
+
+			//フォーム内に投稿情報セット
+			if(empty($this->request->data))
+			{
+				$this->request->data = $post;
+			}
 		}
 	}
 
