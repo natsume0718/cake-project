@@ -10,7 +10,8 @@ class PostsController extends AppController
 	{
 		$this->set('title_for_layout', '投稿一覧');
 		//投稿を全件取得して変数にセット
-		$this->set('posts', $this->Post->find('all'));
+		$param = array('order'=>array('Post.id'));
+		$this->set('posts', $this->Post->find('all', $param));
 		//ログイン情報取得して渡す
 		$this->set('user', $this->Auth->user());
 	}
@@ -87,7 +88,7 @@ class PostsController extends AppController
 				$update_res = $this->Post->save($this->request->data);
 				if($update_res)
 				{
-					$this->Flash->success(__('投稿の交信に成功しました'));
+					$this->Flash->success(__('投稿の更新に成功しました'));
 					return $this->redirect(array('action'=>'index'));
 				}
 			}
