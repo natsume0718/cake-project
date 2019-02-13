@@ -40,6 +40,7 @@ class User extends AppModel
 		)
 	);
 
+	//保存前にパスワードハッシュする
 	public function beforeSave($options =array())
 	{
 		if(isset($this->data[$this->alias]['password']))

@@ -12,8 +12,7 @@ class PostsController extends AppController
 		//投稿を全件取得して変数にセット
 		$this->set('posts', $this->Post->find('all'));
 		//ログイン情報取得して渡す
-		$user['id'] = $this->Auth->user('id');
-		$this->set('user', $user);
+		$this->set('user', $this->Auth->user());
 	}
 
 	public function view($id = null)

@@ -12,6 +12,7 @@ class UsersController extends AppController
 		$this->Auth->allow('add', 'logout');
 	}
 
+	//新規登録
 	public function add()
 	{
 		if($this->request->is('post'))
@@ -36,6 +37,7 @@ class UsersController extends AppController
 			//ログイン
 			if($this->Auth->login())
 			{
+				$this->Flash->success(__('ログインしました'));
 				$this->redirect($this->Auth->redirect());
 			}
 			else
@@ -47,6 +49,7 @@ class UsersController extends AppController
 
 	public function logout()
 	{
+		$this->Flash->success(__('ログアウトしました'));
 		$this->redirect($this->Auth->logout());
 	}
 }

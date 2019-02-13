@@ -8,6 +8,9 @@ if(!isset($user)): ?>
 <p><?php echo $this->Html->link('ログアウト', array('controller'=>'users', 'action'=>'logout')); ?></p>
 <?php endif; ?>
 <p><?php echo $this->Html->link('新規投稿',array('controller'=>'posts', 'action'=>'add')); ?></p>
+<?php if(isset($user)): ?>
+<p>こんにちは: <?php echo $user['username']; ?> さん</p>
+<?php endif; ?>
 <table>
 	<?php
 	//ループで記事出力
