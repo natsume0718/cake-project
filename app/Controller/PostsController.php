@@ -15,22 +15,6 @@ class PostsController extends AppController
 		$this->set('user', $this->Auth->user());
 	}
 
-	public function view($id = null)
-	{
-		if(!$id)
-		{
-			throw new NotFoundException(__('投稿が見つかりません'));
-		}
-
-		$post = $this->Post->findById($id);
-		if(!$post)
-		{
-			throw new NotFoundException(__('投稿が見つかりません'));
-		}
-		$this->set('title_for_layout', $post['Post']['title']);
-		$this->set('post', $post);
-	}
-
 	public function add()
 	{
 		$this->set('title_for_layout', '新規投稿');
