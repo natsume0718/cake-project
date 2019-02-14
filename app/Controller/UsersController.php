@@ -4,12 +4,13 @@ App::uses('AppController', 'Controller');
 
 class UsersController extends AppController
 {
-	public $helpers = array('Html', 'Form', 'Flash');
+	public $helpers = array('Html', 'Form', 'Flash', 'Session');
 
 	public function beforeFilter()
 	{
 		parent::beforeFilter();
 		$this->Auth->allow('add', 'logout');
+		$this->set('user', $this->Auth->user());
 	}
 
 	//新規登録
@@ -26,6 +27,29 @@ class UsersController extends AppController
 				return $this->redirect(array('controller'=>'posts', 'action'=>'index'));
 			}
 			$this->Flash->error(__('登録に失敗しました'));
+		}
+	}
+
+	public function view($id = null)
+	{
+		if($id)
+		{
+			$find_res = $this->User->findById($id);
+			$user_info = $find_res['User'];
+			if($user_info)
+			{
+				$this->set('user_info', $user_info);
+
+			}
+			else
+			{
+				$this->Flash->warning(__('存在しないユーザーです'));
+				return $this->redirect(array('controller'=>'posts', 'action'=>'index'));
+			}
+		}
+		else
+		{
+			throw new NotFoundException;
 		}
 	}
 
