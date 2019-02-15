@@ -38,8 +38,8 @@ class UsersController extends AppController
 			$user_info = $find_res['User'];
 			if($user_info)
 			{
+				//ユーザー情報セット
 				$this->set('user_info', $user_info);
-
 			}
 			else
 			{
@@ -51,6 +51,11 @@ class UsersController extends AppController
 		{
 			throw new NotFoundException;
 		}
+	}
+
+	public function edit()
+	{
+
 	}
 
 	public function login()
