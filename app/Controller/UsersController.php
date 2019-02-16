@@ -10,7 +10,7 @@ class UsersController extends AppController
 	{
 		parent::beforeFilter();
 		$this->Auth->allow('add', 'logout');
-		$this->set('user', $this->Auth->user());
+		$this->set('authuser', $this->Auth->user());
 	}
 
 	//新規登録
@@ -53,9 +53,32 @@ class UsersController extends AppController
 		}
 	}
 
-	public function edit()
+	public function edit($id = null)
 	{
+		if($this->request->is('post'))
+		{
+			//送信されてきたデータをセット
+			$request_data = $this->request->data['User'];
+			$this->User->set($request_data);
+			//imageバリデーションを適用
+			$img_valid_res = $this->User->validates(array('fieldList'=>array('image')));
+			//バリデーション結果判定
+			if($img_valid_res)
+			{
+				//ファイルの形式取得
+				$type = pathinfo($request_data['image']['name'],PATHINFO_EXTENSION);
+				//ファイルの内容からハッシュ生成
+				$hashed_filename = hash_file('sha256', $request_data['image']['tmp_name']);
+				//一時ディレクトリからの移動先のフルパス
+				$fullpath = WWW_ROOT . 'img' . DS . 'user' . DS . $hashed_filename . '.' . $type;
+				$move_res = move_uploaded_file($request_data['image']['tmp_name'], $fullpath);
+				if($move_res)
+				{
+					debug($fullpath);
 
+				}
+			}
+		}
 	}
 
 	public function login()

@@ -1,5 +1,5 @@
 <?php
-App::uses('AppModel', 'Model');
+
 App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
 
 class User extends AppModel
@@ -10,6 +10,10 @@ class User extends AppModel
 				'rule'=>'notBlank',
 				'required'=>true,
 				'message'=>'入力してください'
+			),
+			'uni'=>array(
+				'rule'=>'isUnique',
+				'message'=>'既に同一メールアドレスが登録されています'
 			)
 		),
 		'password'=>array(
@@ -36,6 +40,30 @@ class User extends AppModel
 			'uni'=>array(
 				'rule'=>'isUnique',
 				'message'=>'既に同一メールアドレスが登録されています'
+			)
+		),
+		'image'=>array(
+			'upload-file'=>array(
+				'rule'=>array( 'uploadError'),
+				'message'=>'ファイルのアップロードに失敗しました'
+			),
+			//拡張子チェック
+			'extension'=>array(
+				'rule'=>array( 'extension', array(
+					'jpg', 'jpeg', 'png')
+				),
+				'message'=>'無効なファイルの拡張子です'
+			),
+			//MIMEでチェック
+			'mimetype'=>array(
+				'rule'=>array( 'mimeType', array(
+					'image/jpeg', 'image/png', 'image/gif')
+				),
+				'message'=>'無効なファイ拡張子です'
+			),
+			'size'=>array(
+				'rule'=>array('fileSize', '<=', '1MB'),
+				'message'=>'ファイルサイズは1MB以下にしてください'
 			)
 		)
 	);
