@@ -18,7 +18,7 @@ if(isset($user_info)): ?>
 	<?php endif ?>
 	<?php
 	if($authuser['id'] === $user_info['id']): ?>
-	<p><?php echo $this->Form->postLink('編集',array('action'=>'edit', $authuser['id'])); ?></p>
+	<p><?php echo $this->Html->link('編集',array('action'=>'edit', $authuser['id'])); ?></p>
 	<?php endif; ?>
 </p>
 <?php endif; ?>

@@ -6,6 +6,6 @@
 <?php
 echo $this->Form->create('User', array('type'=>'post', 'enctype'=>'multipart/form-data'));
 echo $this->Form->input('image', array('type'=>'file', 'label'=>'画像', 'required'=>false));
-echo $this->Form->input('message');
+echo $this->Form->input('message', array('required'=>false));
 echo $this->Form->end('編集');
 ?>

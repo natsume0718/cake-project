@@ -43,10 +43,6 @@ class User extends AppModel
 			)
 		),
 		'image'=>array(
-			'upload-file'=>array(
-				'rule'=>array( 'uploadError'),
-				'message'=>'ファイルのアップロードに失敗しました'
-			),
 			//拡張子チェック
 			'extension'=>array(
 				'rule'=>array( 'extension', array(
@@ -64,6 +60,12 @@ class User extends AppModel
 			'size'=>array(
 				'rule'=>array('fileSize', '<=', '1MB'),
 				'message'=>'ファイルサイズは1MB以下にしてください'
+			)
+		),
+		'message'=>array(
+			'length'=>array(
+				'rule'=>array('lengthBetween', 0, 255),
+				'message'=>'255文字以下で入力してください'
 			)
 		)
 	);
