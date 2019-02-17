@@ -55,27 +55,37 @@ class UsersController extends AppController
 
 	public function edit($id = null)
 	{
+		debug($this->request->data);
 		if($this->request->is('post'))
 		{
+			//データの更新のためセット
+			$this->User->id = $id;
 			//送信されてきたデータをセット
 			$request_data = $this->request->data['User'];
 			$this->User->set($request_data);
-			//imageバリデーションを適用
-			$img_valid_res = $this->User->validates(array('fieldList'=>array('image')));
-			//バリデーション結果判定
-			if($img_valid_res)
+			//画像有無
+			if(!empty($request['image']))
 			{
-				//ファイルの形式取得
-				$type = pathinfo($request_data['image']['name'],PATHINFO_EXTENSION);
-				//ファイルの内容からハッシュ生成
-				$hashed_filename = hash_file('sha256', $request_data['image']['tmp_name']);
-				//一時ディレクトリからの移動先のフルパス
-				$fullpath = WWW_ROOT . 'img' . DS . 'user' . DS . $hashed_filename . '.' . $type;
-				$move_res = move_uploaded_file($request_data['image']['tmp_name'], $fullpath);
-				if($move_res)
+				//imageバリデーションを適用
+				$img_valid_res = $this->User->validates(array('fieldList'=>array('image')));
+				//バリデーション結果判定
+				if($img_valid_res)
 				{
-					debug($fullpath);
-
+					//ファイルの形式取得
+					$type = pathinfo($request_data['image']['name'],PATHINFO_EXTENSION);
+					//ファイルの内容からハッシュ生成
+					$hashed_filename = hash_file('sha256', $request_data['image']['tmp_name']);
+					//一時ディレクトリからの移動先のフルパス
+					$fullpath = WWW_ROOT . 'img' . DS . 'user' . DS . $hashed_filename . '.' . $type;
+					//移動
+					$move_res = move_uploaded_file($request_data['image']['tmp_name'], $fullpath);
+					if($move_res)
+					{
+						//更新するデータ
+						$up_data = array('image'=>$fullpath);
+						//更新
+						$this->User->save($up_data, array('validate'=>false));
+					}
 				}
 			}
 		}
