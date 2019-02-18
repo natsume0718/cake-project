@@ -10,6 +10,10 @@ class User extends AppModel
 				'rule'=>'notBlank',
 				'required'=>true,
 				'message'=>'入力してください'
+			),
+			'uni'=>array(
+				'rule'=>'isUnique',
+				'message'=>'すでに使用されているユーザー名です'
 			)
 		),
 		'password'=>array(
