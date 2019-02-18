@@ -43,7 +43,7 @@ class UsersController extends AppController
 			}
 			else
 			{
-				$this->Flash->warning(__('存在しないユーザーです'));
+				$this->Flash->error(__('存在しないユーザーです'));
 				return $this->redirect(array('controller'=>'posts', 'action'=>'index'));
 			}
 		}
@@ -55,16 +55,42 @@ class UsersController extends AppController
 
 	public function edit($id = null)
 	{
-		debug($this->request->data);
+		//アクセスユーザーチェック
+		if($this->Auth->user('id') !== $id)
+		{
+			$this->Flash->error(__('不正なアクセスです'));
+			return $this->redirect(array('controller'=>'posts', 'action'=>'index'));
+		}
+
+		//ユーザー情報を取得
+		$find_res = $this->User->findById($id);
+		$user_info = $find_res['User'];
+		//ユーザー情報をビューにセット
+		if(isset($user_info))
+		{
+			//ユーザー情報セット
+			$this->set('user_info', $user_info);
+		}
+		//プレースホルダーにセット
+		if(empty($this->request->data))
+		{
+			$this->request->data['User']['message'] = $user_info['message'];
+		}
+		//フォームからの送信を処理
 		if($this->request->is('post'))
 		{
+			//画像とメッセージの更新結果
+			$message_res = null;
+			$image_res = null;
 			//データの更新のためセット
 			$this->User->id = $id;
 			//送信されてきたデータをセット
 			$request_data = $this->request->data['User'];
 			$this->User->set($request_data);
+			//コメント更新
+			$message_res = $this->User->saveField('message', $request_data['message'], true);
 			//画像有無
-			if(!empty($request['image']))
+			if(!empty($request_data['image']['name']))
 			{
 				//imageバリデーションを適用
 				$img_valid_res = $this->User->validates(array('fieldList'=>array('image')));
@@ -81,13 +107,17 @@ class UsersController extends AppController
 					$move_res = move_uploaded_file($request_data['image']['tmp_name'], $fullpath);
 					if($move_res)
 					{
-						//更新するデータ
-						$up_data = array('image'=>$fullpath);
 						//更新
-						$this->User->save($up_data, array('validate'=>false));
+						$image_res = $this->User->saveField('image', $fullpath, false);
 					}
 				}
 			}
+
+			if($message_res || $image_res)
+			{
+				$this->Flash->success(__('編集しました'));
+			}
+			return $this->redirect(['action'=>'edit', $id]);
 		}
 	}
 
