@@ -42,22 +42,31 @@ class PostsController extends AppController
 		//getアクセスは弾く
 		if($this->request->is('get'))
 		{
-			throw new MethodNotAllowedException();
+			$this->Flash->error(__('不正なアクセス'));
+			return $this->redirect(array('action'=>'index'));
 		}
 		if($id)
 		{
-			//投稿削除
-			$delete_res = $this->Post->delete($id);
-			if($delete_res)
+			//投稿確認
+			$post = $this->Post->findById($id);
+			if($post['Post']['user_id'] !== $this->Auth->user('id'))
 			{
-				$this->Flash->success(__('投稿を削除しました'));
+				$this->Flash->error(__('不正なアクセスです'));
 			}
 			else
 			{
-				$this->Flash->error(__('投稿の削除失敗'));
+				//投稿削除
+				if($this->Post->delete($id))
+				{
+
+					$this->Flash->success(__('投稿を削除しました'));
+				}
+				else
+				{
+					$this->Flash->error(__('投稿の削除失敗'));
+				}
 			}
 		}
-
 		return $this->redirect(array('action'=>'index'));
 	}
 
