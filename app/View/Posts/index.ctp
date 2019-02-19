@@ -21,7 +21,7 @@ if(!isset($user)): ?>
 		</td>
 		<td>
 			投稿者:
-			<?php echo $post['User']['username']; ?>
+			<?php echo $this->Html->link($post['User']['username'],array('controller'=>'users', 'action'=>'view', $post['User']['id'])); ?>
 		</td>
 		<td>
 			投稿日:

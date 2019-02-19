@@ -71,14 +71,11 @@ class UsersController extends AppController
 			//ユーザー情報セット
 			$this->set('user_info', $user_info);
 		}
-		//プレースホルダーにセット
-		if(empty($this->request->data))
-		{
-			$this->request->data['User']['message'] = $user_info['message'];
-		}
+
 		//フォームからの送信を処理
 		if($this->request->is('post'))
 		{
+			$do_update = true;
 			//画像とメッセージの更新結果
 			$message_res = null;
 			$image_res = null;
@@ -87,13 +84,14 @@ class UsersController extends AppController
 			//送信されてきたデータをセット
 			$request_data = $this->request->data['User'];
 			$this->User->set($request_data);
-			//コメント更新
-			$message_res = $this->User->saveField('message', $request_data['message'], true);
+
 			//画像有無
 			if(!empty($request_data['image']['name']))
 			{
 				//imageバリデーションを適用
 				$img_valid_res = $this->User->validates(array('fieldList'=>array('image')));
+				//messageを更新して良いか
+				$do_update = $img_valid_res;
 				//バリデーション結果判定
 				if($img_valid_res)
 				{
@@ -103,22 +101,36 @@ class UsersController extends AppController
 					$hashed_filename = hash_file('sha256', $request_data['image']['tmp_name']);
 					//一時ディレクトリからの移動先のフルパス
 					$fullpath = WWW_ROOT . 'img' . DS . 'user' . DS . $hashed_filename . '.' . $type;
+					//相対パス付き画像の名前
+					$img_name = 'user' . DS . $hashed_filename . '.' . $type;
 					//移動
 					$move_res = move_uploaded_file($request_data['image']['tmp_name'], $fullpath);
 					if($move_res)
 					{
 						//更新
-						$image_res = $this->User->saveField('image', $fullpath, false);
+						$image_res = $this->User->saveField('image', $img_name, false);
 					}
 				}
 			}
-
-			if($message_res || $image_res)
+			//画像にバリデーションエラーがない時更新
+			if($do_update)
 			{
-				$this->Flash->success(__('編集しました'));
+				//コメント更新
+				$message_res = $this->User->saveField('message', $request_data['message'], true);
+				//どちらかが編集できた
+				if($message_res || $image_res)
+				{
+					$this->Flash->success(__('編集しました'));
+					return $this->redirect(['action'=>'edit',$id]);
+				}
 			}
-			return $this->redirect(['action'=>'edit', $id]);
+			else
+			{
+				$this->Flash->error(__('更新失敗しました'));
+			}
 		}
+		//プレースホルダーにセット
+		$this->request->data['User']['message'] = $user_info['message'];
 	}
 
 	public function login()
