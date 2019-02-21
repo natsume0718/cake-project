@@ -9,7 +9,7 @@ if(!isset($user)): ?>
 <?php endif; ?>
 <p><?php echo $this->Html->link('新規投稿',array('controller'=>'posts', 'action'=>'add')); ?></p>
 <?php if(isset($user)): ?>
-<p>こんにちは: <?php echo $user['username']; ?> さん</p>
+<p>こんにちは: <?php echo $this->Html->link($user['username'], array('controller'=>'users', 'action'=>'view', $user['id'])); ?> さん</p>
 <?php endif; ?>
 <table>
 	<?php
