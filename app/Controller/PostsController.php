@@ -9,8 +9,8 @@ class PostsController extends AppController
 	public function index()
 	{
 		$this->set('title_for_layout', '投稿一覧');
-		//投稿を全件取得して変数にセット
-		$param = array('order'=>array('Post.id'));
+		//投稿を削除済み以外全件取得して変数にセット
+		$param = array('conditions'=>array('Post.is_deleted'=>FALSE), 'order'=>array('Post.id'));
 		$this->set('posts', $this->Post->find('all', $param));
 		//ログイン情報取得して渡す
 		$this->set('user', $this->Auth->user());
@@ -42,22 +42,33 @@ class PostsController extends AppController
 		//getアクセスは弾く
 		if($this->request->is('get'))
 		{
-			throw new MethodNotAllowedException();
+			$this->Flash->error(__('不正なアクセス'));
+			return $this->redirect(array('action'=>'index'));
 		}
 		if($id)
 		{
-			//投稿削除
-			$delete_res = $this->Post->delete($id);
-			if($delete_res)
+			//投稿確認
+			$post = $this->Post->findById($id);
+			if($post['Post']['user_id'] !== $this->Auth->user('id'))
 			{
-				$this->Flash->success(__('投稿を削除しました'));
+				$this->Flash->error(__('不正なアクセスです'));
 			}
 			else
 			{
-				$this->Flash->error(__('投稿の削除失敗'));
+				//論理削除なのでid指定
+				$this->Post->id = $id;
+				//投稿論理削除
+				if($this->Post->saveField('is_deleted', TRUE))
+				{
+
+					$this->Flash->success(__('投稿を削除しました'));
+				}
+				else
+				{
+					$this->Flash->error(__('投稿の削除失敗'));
+				}
 			}
 		}
-
 		return $this->redirect(array('action'=>'index'));
 	}
 
