@@ -123,6 +123,10 @@ class UsersController extends AppController
 					$this->Flash->success(__('編集しました'));
 					return $this->redirect(['action'=>'edit',$id]);
 				}
+				else
+				{
+					$this->Flash->error(__('更新失敗しました'));
+				}
 			}
 			else
 			{
