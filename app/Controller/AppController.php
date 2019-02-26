@@ -53,6 +53,6 @@ class AppController extends Controller {
 	public function beforeFilter()
 	{
 		//ログイン不要のコントローラのアクションを定義
-		$this->Auth->allow('index', 'view');
+		$this->Auth->allow('index', 'view','login');
 	}
 }

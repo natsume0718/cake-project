@@ -8,4 +8,5 @@
 	echo $this->Form->end('ログイン');
 	?>
 </div>
+<p><?php echo $this->Html->link('パスワードを忘れた方はこちら',array('controller'=>'resets', 'action'=>'send'));
 
