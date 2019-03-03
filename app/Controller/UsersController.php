@@ -62,16 +62,6 @@ class UsersController extends AppController
 			return $this->redirect(array('controller'=>'posts', 'action'=>'index'));
 		}
 
-		//ユーザー情報を取得
-		$find_res = $this->User->findById($id);
-		$user_info = $find_res['User'];
-		//ユーザー情報をビューにセット
-		if(isset($user_info))
-		{
-			//ユーザー情報セット
-			$this->set('user_info', $user_info);
-		}
-
 		//フォームからの送信を処理
 		if($this->request->is('post'))
 		{
@@ -133,6 +123,19 @@ class UsersController extends AppController
 				$this->Flash->error(__('更新失敗しました'));
 			}
 		}
+		else
+		{
+			//ユーザー情報を取得
+			$find_res = $this->User->findById($id);
+			$user_info = $find_res['User'];
+			//ユーザー情報をビューにセット
+			if(isset($user_info))
+			{
+				//ユーザー情報セット
+				$this->set('user_info', $user_info);
+			}
+		}
+
 		//プレースホルダーにセット
 		$this->request->data['User']['message'] = $user_info['message'];
 	}
