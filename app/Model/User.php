@@ -13,7 +13,7 @@ class User extends AppModel
 			),
 			'uni'=>array(
 				'rule'=>'isUnique',
-				'message'=>'既に同一メールアドレスが登録されています'
+				'message'=>'すでに使用されているユーザー名です'
 			)
 		),
 		'password'=>array(
